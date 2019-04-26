@@ -1,0 +1,19 @@
+<% if user_signed_in? %>
+
+<header class="jumbotron text-center">
+    <nav class="text-right ">
+        <%= link_to "", destroy_user_session_path, method: :delete, class: 'fa fa-sign-out' %>
+    </nav>
+    <h2><small>Welcome back</small> <%= current_user.username %></h2>
+</header>
+<%#= react_component("Workgroups") %>
+
+<% else %>
+<header class="jumbotron text-center">
+    <h1>ProsFin</h1>
+    <a  href="/users/sign_in" class="btn btn-lg btn-primary">Sign in</a>
+    <a  href="/users/sign_up" class="btn btn-lg btn-primary">Register</a>
+</header>
+
+
+<% end %>
