@@ -207,6 +207,7 @@ class UserReport extends React.Component{
                 });
 
                 var totale = tot_accrediti - tot_addebiti;
+                totale = Math.round(parseFloat(totale) * 100)/100
 
                 this.setState({
                     movements : movements, 
