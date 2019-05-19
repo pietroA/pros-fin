@@ -199,10 +199,10 @@ class UserReport extends React.Component{
 
                 movements.forEach(m => {
                     if(m.movement_type == 1) {
-                        tot_accrediti += parseFloat(m.amount);
+                        tot_accrediti += Math.round(parseFloat(m.amount) * 100)/100;
                     }
                     if(m.movement_type == 2) {
-                        tot_addebiti += parseFloat(m.amount);
+                        tot_addebiti += Math.round(parseFloat(m.amount) * 100)/100;
                     }
                 });
 
