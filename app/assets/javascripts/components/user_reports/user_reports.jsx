@@ -264,13 +264,17 @@ class UserReport extends React.Component{
         
         var movements = [];
         this.state.movements.forEach(movement => {
-            movements.push(<Movement key={"movement-"+movement.id} movement={movement} Reload={this.Load} />);
+            movements.push(<Movement key={"movement-"+movement.id} 
+                                     movement={movement} 
+                                     user_report={this.props.user_report}
+                                     Reload={this.Load} />);
         });
         
         var periodical_movements = [];
         this.state.periodical_movements.forEach(periodical_movement => {
             periodical_movements.push(<PeriodicalMovement key={"periodical-movement-"+periodical_movement.id} 
                                                           periodical_movement={periodical_movement}
+                                                          user_report={this.props.user_report}
                                                           Reload={this.Load} />);
         });
         var periodical_movement_form = (
@@ -312,7 +316,7 @@ class UserReport extends React.Component{
             );
         var header = (
             <header>
-                <strong>{this.props.user_report.name} </strong>
+                <h2>{this.props.user_report.name} </h2>
                 <a href="" onClick={this.Delete}><i className="fa fa-times"></i></a>
                 <a href="" onClick={this.ToggleMode}><i className="fa fa-pencil"></i></a>
             </header>
@@ -325,7 +329,7 @@ class UserReport extends React.Component{
                 </header>);
             } 
         return(
-<div role="tabpanel" className="tab-pane" id={"user-report-"+this.props.user_report.id}>
+<div role="tabpanel" className="user-report tab-pane" id={"user-report-"+this.props.user_report.id}>
         {header}
         <section>
             <ul className="list-group">

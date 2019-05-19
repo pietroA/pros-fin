@@ -1,14 +1,52 @@
 class Movement extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            edit_mode : false
+        };
+        this.ToggleMode = this.ToggleMode.bind(this);
+    }
+    ToggleMode(e){
+        e.preventDefault();
+
+        var edit_mode = !this.state.edit_mode;
+        this.setState({ edit_mode : edit_mode });
+    }
     render(){
+
+        var movement_type = this.props.movement.movement_type == 1 ? 'accredito' : 'addebito';
+
         var description = '';
         if(this.props.movement.description){
             description = <p>{this.props.movement.description}</p>;
         }
+
+        var content = <div>
+            <h4>{this.props.movement.operation_date} - {this.props.movement.name}</h4>
+            {description}
+            <ul className="list-group">
+                <li className="list-group-item">
+                    <b>Importo:</b> {this.props.movement.amount}
+                </li>
+                <li  className="list-group-item">
+                    <b>Tipo Movimento:</b> {movement_type}
+                </li>
+            </ul>
+        </div>;
+
+        if(this.state.edit_mode) {
+            content = <MovementForm user_report={this.props.user_report}
+                                 movement={this.props.movement}
+                                 Reload={this.props.Reload} />;
+        }
+
+        console.log(this.props.movement, this.props.movement.movement_type == 1, movement_type);
         return(
-<div className={"movement "+this.props.movement.movement_type == 1 ? 'accredito' : 'addebito'}>
-    <h4>{this.props.movement.operation_date} - {this.props.movement.name}</h4>
-    <h3>{this.props.movement.amount}</h3>
-    {description}
+<div className={"movement "+movement_type}>
+    <a href="" onClick={this.ToggleMode} className="edit-button">
+        <i className="fa fa-pencil"></i>
+    </a>
+    {content}
 </div>
         )
     }
@@ -73,11 +111,11 @@ class MovementForm extends React.Component{
         movement.movement_type = this.state.movement_type;
         movement.amount = this.state.amount;
         movement.operation_date = this.state.operation_date;
-        movement.name = this.state.operation_date;
+        movement.name = this.state.name;
         movement.description = this.state.description;
 
         $.ajax({
-            url: '/api/user_reports/'+this.props.user_report.id+'/movements/',
+            url: '/api/user_reports/'+this.props.user_report.id+'/movements/'+movement.id,
             type: 'PUT',
             data: {
                 movement : movement

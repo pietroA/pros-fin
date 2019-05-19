@@ -5,8 +5,8 @@ class Api::MovementsController < Api::ApiApplicationController
     def index
         @movements = @user_report.movements.order(:operation_date).all
         
-        @movements = @movements.where(["operation_date >= :date_from", {:date_from => params[:date_from]}]).all if(params[:date_from])
-        @movements = @movements.where(["operation_date <= :date_to", {:date_to => params[:date_to]}]).all if(params[:date_to])
+        @movements = @movements.where(["operation_date >= :date_from", {:date_from => params[:date_from]}]).all if(params[:date_from]) != ''
+        @movements = @movements.where(["operation_date <= :date_to", {:date_to => params[:date_to]}]).all if(params[:date_to]) != ''
 
         render json: @movements.as_json
     end
@@ -54,6 +54,6 @@ class Api::MovementsController < Api::ApiApplicationController
     end
 
     def set_movement
-        @movement = PeriodicalMovement.find(params[:id])
+        @movement = Movement.find(params[:id])
     end
 end

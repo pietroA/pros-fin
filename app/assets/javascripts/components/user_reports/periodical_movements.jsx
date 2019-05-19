@@ -1,13 +1,57 @@
 class PeriodicalMovement extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            edit_mode : false
+        };
+        this.ToggleMode = this.ToggleMode.bind(this);
+    }
+    ToggleMode(e) {
+        e.preventDefault();
+        var edit_mode = !this.state.edit_mode;
+        this.setState({ edit_mode : edit_mode });
+    }
     render(){
+
+        var tipo_movimento = this.props.periodical_movement.movement_type == 1 ? 'accredito' : 'addebito';
+
         var description = '';
         if(this.props.periodical_movement.description){
             description = <p>{this.props.periodical_movement.description}</p>
         }
-        return(
-<div className="movement">
+
+        var content = <div>
     <h4>{this.props.periodical_movement.name}</h4>
     {description}
+    <ul className="list-group">
+        <li className="list-group-item">
+            <b>Tipo Movimento:</b> { tipo_movimento }
+        </li>
+        <li className="list-group-item">
+            <b>Importo:</b> { this.props.periodical_movement.amount }
+        </li>
+        <li className="list-group-item">
+            <b>Da:</b> { this.props.periodical_movement.start_date } <b>A:</b> { this.props.periodical_movement.end_date }
+        </li>
+        <li className="list-group-item">
+            <b>Si ripete:</b> <Repetition repetition_type={this.props.periodical_movement.type_repetition} 
+                                          repetition_value={this.props.periodical_movement.value_repetition} />
+
+        </li>
+    </ul>
+</div>;
+        if(this.state.edit_mode) {
+            content = <PeriodicalMovementForm user_report={this.props.user_report}
+                                              periodical_movement={this.props.periodical_movement}
+                                              Reload={this.props.Reload} />;
+        }
+
+        return(
+<div className={"movement "+tipo_movimento}>
+    <a href="" onClick={this.ToggleMode} className="edit-button">
+        <i className="fa fa-pencil"></i>
+    </a>
+    {content}
 </div>
         )
     }
