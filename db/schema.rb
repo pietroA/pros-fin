@@ -10,7 +10,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190426120512) do
+ActiveRecord::Schema.define(version: 20190515192952) do
+
+# Could not dump table "movements" because of following StandardError
+#   Unknown type 'bool' for column 'edited'
+
+  create_table "periodical_movements", force: :cascade do |t|
+    t.integer "user_report_id"
+    t.integer "movement_type"
+    t.decimal "amount"
+    t.string "name"
+    t.text "description"
+    t.integer "value_repetition"
+    t.integer "type_repetition"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "start_date"
+    t.date "end_date"
+    t.index ["user_report_id"], name: "index_periodical_movements_on_user_report_id"
+  end
+
+  create_table "user_reports", force: :cascade do |t|
+    t.string "name"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_user_reports_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false

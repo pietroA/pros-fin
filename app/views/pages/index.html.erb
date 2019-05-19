@@ -1,12 +1,6 @@
 <% if user_signed_in? %>
 
-<header class="jumbotron text-center">
-    <nav class="text-right ">
-        <%= link_to "", destroy_user_session_path, method: :delete, class: 'fa fa-sign-out' %>
-    </nav>
-    <h2><small>Welcome back</small> <%= current_user.username %></h2>
-</header>
-<%#= react_component("Workgroups") %>
+<%= react_component("UserHomePage", { current_user: current_user.to_json}) %>
 
 <% else %>
 <header class="jumbotron text-center">
