@@ -86,7 +86,7 @@ class PeriodicalMovement extends React.Component {
     <div className="content">
         {content}
     </div>
-    <div className="modal fade" tabIndex="-1" role="dialog" id={"pm-movement-"+this.props.periodical_movement.id}>
+    <div className="modal fade" tabIndex="-1" role="dialog" id={"delete-pm-"+this.props.periodical_movement.id}>
         <div className="modal-dialog" role="document">
             <div className="modal-content">
                 <div className="modal-header">
