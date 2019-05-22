@@ -2,14 +2,43 @@ class PeriodicalMovement extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            edit_mode : false
+            edit_mode : false,
+            delete_option: 0
         };
         this.ToggleMode = this.ToggleMode.bind(this);
+        this.HandleChange = this.HandleChange.bind(this);
+        this.EditModal = this.EditModal.bind(this);
+        this.Delete = this.Delete.bind(this);
+        this.DeleteModal = this.DeleteModal.bind(this);
+    }
+    HandleChange(e){
+        var name = e.target.name;
+        var value = e.target.value;
+        this.setState({ [name] : value });
     }
     ToggleMode(e) {
         e.preventDefault();
         var edit_mode = !this.state.edit_mode;
         this.setState({ edit_mode : edit_mode });
+    }
+    EditModal(e){
+        e.preventDefault();
+        $("#edit-pm-"+this.props.periodical_movement.id).modal("show");
+    }
+    DeleteModal(e) {
+        e.preventDefault();
+        $("#delete-pm-"+this.props.periodical_movement.id).modal("show");
+    }
+    Delete() {
+        $.ajax({
+            ulr : '/api/user_reports/'+this.props.user_report.id+'/periodical_movements/'+this.props.periodical_movement.id,
+            type : 'DELETE',
+            data : {
+                delete_option : delete_option
+            },
+            success : () => { this.props.Reload() },
+            error : (xhr, error, status) => { console.log(xhr, error, status); }
+        });
     }
     render(){
 
@@ -31,7 +60,10 @@ class PeriodicalMovement extends React.Component {
             <b>Importo:</b> { this.props.periodical_movement.amount }
         </li>
         <li className="list-group-item">
-            <b>Da:</b> { this.props.periodical_movement.start_date } <b>A:</b> { this.props.periodical_movement.end_date }
+            <b>Da:</b> { this.props.periodical_movement.start_date }
+        </li>
+        <li className="list-group-item">
+            <b>A:</b> { this.props.periodical_movement.end_date }
         </li>
         <li className="list-group-item">
             <b>Si ripete:</b> <Repetition repetition_type={this.props.periodical_movement.type_repetition} 
@@ -40,18 +72,62 @@ class PeriodicalMovement extends React.Component {
         </li>
     </ul>
 </div>;
-        if(this.state.edit_mode) {
-            content = <PeriodicalMovementForm user_report={this.props.user_report}
-                                              periodical_movement={this.props.periodical_movement}
-                                              Reload={this.props.Reload} />;
-        }
 
         return(
 <div className={"movement "+tipo_movimento}>
-    <a href="" onClick={this.ToggleMode} className="edit-button">
-        <i className="fa fa-pencil"></i>
-    </a>
-    {content}
+    <nav>
+        <a href="" onClick={this.EditModal} className="edit-button">
+            <i className="fa fa-pencil"></i>
+        </a>
+        <a href="" onClick={this.DeleteModal} className="delete-button">
+            <i className="fa fa-trash"></i>
+        </a>
+    </nav>
+    <div className="content">
+        {content}
+    </div>
+    <div className="modal fade" tabIndex="-1" role="dialog" id={"pm-movement-"+this.props.periodical_movement.id}>
+        <div className="modal-dialog" role="document">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 className="modal-title">Conferma</h4>
+                </div>
+                <div className="modal-body">
+                    <p>Sei sicuro di eliminare il movimento periodico {this.props.periodical_movement.name}?</p>
+                    <p><small>Verrà eliminato il solo movimento</small></p>
+                    <select name="delete_option" value={this.state.delete_option} onChange={this.HandleChange}>
+                        <option value="0">Non eliminare i movimenti</option>
+                        <option value="1">Elimina tutti i movimenti</option>
+                        <option value="2">Elimina tutti i movimenti tranne quelli modificati</option>
+                        <option value="3">Elimina solo i movimenti futuri</option>
+                        <option value="4">Elimina solo i movimenti futuri tranne quelli modificati</option>
+                        <option value="5">Elimina solo i movimenti passati</option>
+                        <option value="6">Elimina solo i movimenti passati tranne quelli modificati</option>
+                    </select>
+                </div>
+                <div className="modal-footer">
+                    <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" className="btn btn-primary" onClick={this.Delete}>Elimina</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div className="modal fade" tabIndex="-1" role="dialog" id={"edit-pm-"+this.props.periodical_movement.id}>
+        <div className="modal-dialog" role="document">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 className="modal-title">Modifica movimento {this.props.periodical_movement.name}</h4>
+                </div>
+                <div className="modal-body">
+                <PeriodicalMovementForm user_report={this.props.user_report}
+                                              periodical_movement={this.props.periodical_movement}
+                                              Reload={this.props.Reload} />
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
         )
     }
@@ -145,13 +221,15 @@ class PeriodicalMovementForm extends React.Component {
             title = this.props.periodical_movement.name;
             update_options = (
 <div>
-    <div className="field">
-        <label htmlFor="previous">Includi precendenti</label>
-        <input type="checkbox" id="previous" name="previous" value={this.state.previous} onChange={this.HandleChange} />
+    <div className="field checkbox">
+        <label htmlFor="previous">
+            Includi precendenti <input type="checkbox" id="previous" name="previous" value={this.state.previous} onChange={this.HandleChange} />
+        </label>
     </div>
-    <div className="field">
-        <label htmlFor="all">Includi precendenti</label>
-        <input type="checkbox" id="all" name="all" value={this.state.all} onChange={this.HandleChange} />
+    <div className="field checkbox">
+        <label htmlFor="all">
+            Includi precendenti <input type="checkbox" id="all" name="all" value={this.state.all} onChange={this.HandleChange} />
+        </label>        
     </div>
 </div>
             );
@@ -161,19 +239,19 @@ class PeriodicalMovementForm extends React.Component {
 <form>
     <fieldset>
         <legend>{title}</legend>
-        <div className="field">
+        <div className="form-group">
             <label htmlFor="name">Nome</label>
-            <input type="text" name="name" id="name" value={this.state.name} onChange={this.HandleChange} />
+            <input className="form-control" type="text" name="name" id="name" value={this.state.name} onChange={this.HandleChange} />
         </div>
-        <div className="field">
+        <div className="form-group">
             <label htmlFor="movement_type">Accredito/Addebito</label>
-            <select name="movement_type" id="movement_type" value={this.state.movement_type} onChange={this.HandleChange}>
+            <select className="form-control" name="movement_type" id="movement_type" value={this.state.movement_type} onChange={this.HandleChange}>
                 <option value="0"> -- seleziona -- </option>
                 <option value="1"> Accredito </option>
                 <option value="2"> Addebito </option>
             </select>
         </div>
-        <div className="field">
+        <div className="form-group">
             <label htmlFor="type_repetition">Tipo di ripetizione</label>
             <select name="type_repetition" id="type_repetition" value={this.state.type_repetition} onChange={this.HandleChange}>
                 <option value="0"> -- seleziona -- </option>
@@ -182,28 +260,28 @@ class PeriodicalMovementForm extends React.Component {
                 <option value="3"> Ultimo del mese </option>
             </select>
         </div>
-        <div className="field">
+        <div className="form-group">
             <label htmlFor="value_repetition">Giorno della ripetizione</label>
-            <input type="number" name="value_repetition" id="value_repetition" value={this.state.value_repetition} onChange={this.HandleChange} />
+            <input className="form-control" type="number" name="value_repetition" id="value_repetition" value={this.state.value_repetition} onChange={this.HandleChange} />
         </div>
         <Repetition repetition_type={this.state.type_repetition} repetition_value={this.state.value_repetition} />
-        <div className="field">
+        <div className="form-group">
             <label htmlFor="amount">Importo</label>
-            <input type="number" min="0,00" name="amount" id="amount" value={this.state.amount} onChange={this.HandleChange} />
+            <input className="form-control" type="number" min="0,00" name="amount" id="amount" value={this.state.amount} onChange={this.HandleChange} />
         </div>
-        <div className="field">
+        <div className="form-group">
             <label htmlFor="start_date">Da</label>
-            <input type="date" name="start_date" id="start_date" value={this.state.start_date} onChange={this.HandleChange} />
+            <input className="form-control" type="date" name="start_date" id="start_date" value={this.state.start_date} onChange={this.HandleChange} />
             <label htmlFor="end_date">A</label>
-            <input type="date" name="end_date" id="end_date" value={this.state.end_date} onChange={this.HandleChange} />
+            <input className="form-control" type="date" name="end_date" id="end_date" value={this.state.end_date} onChange={this.HandleChange} />
         </div>
         <div>
-            <textarea name="description" id="description" value={this.state.description} onChange={this.HandleChange}></textarea>
+            <textarea className="form-control" name="description" id="description" value={this.state.description} onChange={this.HandleChange}></textarea>
         </div>
         {update_options}
     </fieldset>
-    <button type="button" onClick={this.Save}><i className="fa fa-save"></i> Salva</button>
-    <button type="reset"><i className="fa fa-undo"></i> Annulla</button>
+    <button className="btn btn-button" type="button" onClick={this.Save}><i className="fa fa-save"></i> Salva</button>
+    <button className="btn btn-button" type="reset"><i className="fa fa-undo"></i> Annulla</button>
 </form>
         );
     }

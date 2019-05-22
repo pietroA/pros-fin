@@ -53,7 +53,7 @@ class UserReports extends React.Component{
                             SelectUserReports={this.SelectUserReports}
                             ChangeUserReports={this.ChangeUserReports} />
             );
-            btn_user_reports.push(
+            btn_user_reports.push(                
 <li key={"user-report-li-"+user_report.id}><a href={"#user-report-"+user_report.id} 
         aria-controls={"user-report-"+user_report.id}
         id={"user-report-li-"+user_report.id} 
@@ -62,8 +62,10 @@ class UserReports extends React.Component{
         });
 
         return(
-<div>
-    <UserReportForm AddUserReport={this.AddUserReport} />
+<div className="user-reports">
+    <div className="user-report-form">
+        <UserReportForm AddUserReport={this.AddUserReport} />
+    </div>
 
     <div className="dropdown">
         <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -144,9 +146,9 @@ class UserReportForm extends React.Component{
     render(){
         return(
 <form>
-    <input type="text" name="name" value={this.state.name} onChange={this.HandleChange}/>
-    <button type="reset">Annulla</button> 
-    <button type="button" onClick={this.Save}>Salva</button>
+    <input className="form-control" type="text" name="name" value={this.state.name} onChange={this.HandleChange}/>
+    <button className="btn btn-default" type="reset">Annulla</button> 
+    <button className="btn btn-default" type="button" onClick={this.Save}>Salva</button>
 </form>
         )
     }
@@ -207,7 +209,7 @@ class UserReport extends React.Component{
                 });
 
                 var totale = tot_accrediti - tot_addebiti;
-                totale = Math.round(parseFloat(totale) * 100)/100
+                totale = Math.round(parseFloat(totale) * 100)/100;
 
                 this.setState({
                     movements : movements, 
@@ -318,15 +320,15 @@ class UserReport extends React.Component{
         var header = (
             <header>
                 <h2>{this.props.user_report.name} </h2>
-                <a href="" onClick={this.Delete}><i className="fa fa-times"></i></a>
-                <a href="" onClick={this.ToggleMode}><i className="fa fa-pencil"></i></a>
+                <h2><a href="" onClick={this.Delete}><i className="fa fa-times"></i></a></h2>
+                <h2><a href="" onClick={this.ToggleMode}><i className="fa fa-pencil"></i></a></h2>
             </header>
             );
         if(this.state.edit_mode){
           header =(
                 <header>
                     <UserReportForm user_report={this.props.user_report} ChangeUserReports={this.ChangeUserReports} />
-                    <a href="" onClick={this.ToggleMode}><i className="fa fa-pencil"></i></a>
+                    <h2><a href="" onClick={this.ToggleMode}><i className="fa fa-pencil"></i></a></h2>
                 </header>);
             } 
         return(
@@ -347,10 +349,16 @@ class UserReport extends React.Component{
 
   <div className="tab-content">
     <div role="tabpanel" className="tab-pane active" id="home">
-        <div>
-            <input type="date" name="date_from" value={this.state.date_from} onChange={this.HandleChange} />
-            <input type="date" name="date_to" value={this.state.date_To} onChange={this.HandleChange} />
-            <button type="button" onClick={this.GetMovements}>
+        <div className="form-inline">
+            <div className="form-group">
+                <label htmlFor="date_from">Da: </label>
+                <input className="form-control" type="date" name="date_from" value={this.state.date_from} onChange={this.HandleChange} />
+            </div>
+            <div className="form-group">
+                <label htmlFor="date_to">A: </label>
+                <input className="form-control" type="date" name="date_to" value={this.state.date_To} onChange={this.HandleChange} />
+            </div>
+            <button className="btn btn-default" type="button" onClick={this.GetMovements}>
                 <i className="fa fa-search"></i> Filtra
             </button>
         </div>

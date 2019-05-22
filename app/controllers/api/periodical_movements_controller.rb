@@ -31,6 +31,19 @@ class Api::PeriodicalMovementsController < Api::ApiApplicationController
     end
 
     def destroy
+        if params[:delete_option] == '0'
+            @periodical_movement.movements.all.each { |m| m.update_attributes(periodical_movement: nil) }
+        elsif params[:delete_option] == '2'
+            @periodical_movement.movements.where(edited: true).all.each { |m| m.update_attributes(periodical_movement: nil) }
+        elsif params[:delete_option] == '3'
+            @periodical_movement.movements.where(['date_operation < :today', { :today => Date.today }]).all.each { |m| m.update_attributes(periodical_movement: nil) }
+        elsif params[:delete_option] == '4'
+            @periodical_movement.movements.where(['edited = true or date_operation < :today', { :today => Date.today }]).all.each { |m| m.update_attributes(periodical_movement: nil) }
+        elsif params[:delete_option] == '5'
+            @periodical_movement.movements.where(['date_operation > :today', { :today => Date.today }]).all.each { |m| m.update_attributes(periodical_movement: nil) }
+        elsif params[:delete_option] == '6'
+            @periodical_movement.movements.where(['edited = true or date_operation > :today', { :today => Date.today }]).all.each { |m| m.update_attributes(periodical_movement: nil) }
+        end
         @periodical_movement.destroy
         head :no_content
     end

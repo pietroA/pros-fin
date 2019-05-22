@@ -4,13 +4,25 @@ class Movement extends React.Component{
         this.state = {
             edit_mode : false
         };
-        this.ToggleMode = this.ToggleMode.bind(this);
+        this.EditModal = this.EditModal.bind(this);
+        this.Delete = this.Delete.bind(this);
+        this.DeleteModal = this.DeleteModal.bind(this);
     }
-    ToggleMode(e){
+    EditModal(e){
         e.preventDefault();
-
-        var edit_mode = !this.state.edit_mode;
-        this.setState({ edit_mode : edit_mode });
+        $("#edit-movement-"+this.props.movement.id).modal("show");
+    }
+    DeleteModal(e) {
+        e.preventDefault();
+        $("#delete-movement-"+this.props.movement.id).modal("show");
+    }
+    Delete() {
+        $.ajax({
+            ulr : '/api/user_reports/'+this.props.user_report.id+'/movements/'+this.props.movement.id,
+            type : 'DELETE',
+            success : () => { this.props.Reload() },
+            error : (xhr, error, status) => { console.log(xhr, error, status); }
+        });
     }
     render(){
 
@@ -34,19 +46,52 @@ class Movement extends React.Component{
             </ul>
         </div>;
 
-        if(this.state.edit_mode) {
-            content = <MovementForm user_report={this.props.user_report}
-                                 movement={this.props.movement}
-                                 Reload={this.props.Reload} />;
-        }
-
-        console.log(this.props.movement, this.props.movement.movement_type == 1, movement_type);
-        return(
+    return(
 <div className={"movement "+movement_type}>
-    <a href="" onClick={this.ToggleMode} className="edit-button">
-        <i className="fa fa-pencil"></i>
-    </a>
-    {content}
+    <nav>
+        <a href="" onClick={this.EditModal} className="edit-button">
+            <i className="fa fa-pencil"></i>
+        </a>
+        <a href="" onClick={this.DeleteModal} className="delete-button">
+            <i className="fa fa-trash"></i>
+        </a>
+    </nav>
+    <div className="content">
+        {content}
+    </div>
+    <div className="modal fade" tabIndex="-1" role="dialog" id={"delete-movement-"+this.props.movement.id}>
+        <div className="modal-dialog" role="document">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 className="modal-title">Conferma</h4>
+                </div>
+                <div className="modal-body">
+                    <p>Sei sicuro di eliminare il movimento {this.props.movement.name}?</p>
+                    <p><small>Verrà eliminato il solo movimento</small></p>
+                </div>
+                <div className="modal-footer">
+                    <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" className="btn btn-primary" onClick={this.Delete}>Elimina</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div className="modal fade" tabIndex="-1" role="dialog" id={"edit-movement-"+this.props.movement.id}>
+        <div className="modal-dialog" role="document">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 className="modal-title">Modifica movimento {this.props.movement.name}</h4>
+                </div>
+                <div className="modal-body">
+                    <MovementForm user_report={this.props.user_report}
+                                 movement={this.props.movement}
+                                 Reload={this.props.Reload} />
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
         )
     }
@@ -140,17 +185,18 @@ class MovementForm extends React.Component{
 <form>
     <fieldset>
         <legend>{legend}</legend>
-        <div className="field">
+        <div className="form-group">
             <label htmlFor="name">Nome</label>
-            <input type="text" name="name" value={this.state.name} onChange={this.HandleChange} />
+            <input className="form-control" type="text" name="name" value={this.state.name} onChange={this.HandleChange} />
         </div>
-        <div className="field">
-            <textarea name="description" onChange={this.HandleChange} value={this.state.description}></textarea>
+        <div className="form-group">
+            <textarea  className="form-control" name="description" onChange={this.HandleChange} value={this.state.description}></textarea>
         </div>
 
-        <div className="field">
+        <div className="form-group">
             <label htmlFor="movement_type">Movimento di: </label>
             <select name="movement_type"
+                     className="form-control"
                     value={this.state.movement_type}
                     onChange={this.HandleChange}>
                     <option value="0">Tipo Movimento</option>
@@ -159,18 +205,18 @@ class MovementForm extends React.Component{
             </select>
         </div>
 
-        <div className="field">
+        <div className="form-group">
             <label htmlFor="amount">Importo</label>
-            <input type="number" name="amount" value={this.state.amount} min="0.00" onChange={this.HandleChange} />
+            <input  className="form-control" type="number" name="amount" value={this.state.amount} min="0.00" onChange={this.HandleChange} />
         </div>
-        <div className="field">
+        <div className="form-group">
             <label htmlFor="operation_date">Data Operazione</label>
-            <input type="date" name="operation_date" value={this.state.operation_date} onChange={this.HandleChange} />
+            <input  className="form-control" type="date" name="operation_date" value={this.state.operation_date} onChange={this.HandleChange} />
         </div>
     </fieldset>
 
-    <button type="button" onClick={this.Save}> <i className="fa fa-save"></i> Salva</button>
-    <button type="reset"><i className="fa fa-undo"></i> Annulla</button>
+    <button className="btn btn-default" type="button" onClick={this.Save}> <i className="fa fa-save"></i> Salva</button>
+    <button className="btn btn-default" type="reset"><i className="fa fa-undo"></i> Annulla</button>
 </form>
         );
     }

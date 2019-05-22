@@ -2,26 +2,54 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-.user-report {
+.user-reports {
     padding: 10px;
     color: rgba(50, 50, 50, 0.8);
-    header {
-        text-align: center;
-        h2 { 
-            display: inline-block;
+    .user-report {
+        header {
+            text-align: center;
+            h2 {
+                display: inline-block;
+                margin-left: 10px;
+                margin-right: 10px;
+            }
         }
     }
 }
 
 .movement {
     position: relative;
-    width: 90%;
     margin: 10px auto;
     padding: 10px;
     border: 5px solid;
     border-radius: 20px;
-    .edit-button {
+    height: 200px;
+    .list-group {
+        margin-bottom: 0;
+    }
+    .content {
+        height: 170px;
+        overflow-y: auto;
+    }
+    nav {
         position: absolute;
+        height: 100%;
+        width: 100px;
+        top: 0;
+        a {
+            color: rgba(50, 50, 50, 0.8);
+            display: block;
+            height: 50%;
+            width: 100%;
+            font-size: 2em;
+            text-align: center;
+        }
+        .edit-button{
+            border-bottom: inset 2px;
+        }
+        .delete-button {
+            border-top: inset 2px;
+        }
     }
 }
 
@@ -29,33 +57,59 @@
     text-align: right;
     padding-left: 100px;
     border-color: red;
-    border-top-left-radius: 200px;
-    border-bottom-left-radius: 200px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
     h4{
         background-color: red;
         color: white;
         padding: 5px;
     }
-    .edit-button {
-        position: absolute;
-        left: 50px;
-        top: 50%;
+    nav {
+        left: 0;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        a {
+            border-color: red;
+            background-color: rgba(250, 60, 60, 0.8);
+        }
+        a:hover {
+            background-color: rgba(200, 60, 60, 2.8);
+        }
+        .edit-button {
+            line-height: 4em;
+        }
+        .delete-button {
+            line-height: 2.5em;
+        }
     }
 }
 .accredito {
     text-align: left;
     padding-right: 100px;
     border-color: green;
-    border-top-right-radius: 200px;
-    border-bottom-right-radius: 200px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
     h4 {
         background-color: green;
         color: white;
         padding: 5px;
     }
-    .edit-button {
-        position: absolute;
-        right: 50px;
-        top: 50%;
+    nav {
+        right: 0;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        a {
+            background-color:  rgba(60, 250, 60, 0.8);
+            border-color: green;
+        }
+        a:hover {
+            background-color:  rgba(60, 200, 60, 2.8);
+        }
+        .edit-button {
+            line-height: 4em;
+        }
+        .delete-button {
+            line-height: 2.5em;
+        }
     }
 }
