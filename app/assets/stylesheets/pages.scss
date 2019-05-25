@@ -17,6 +17,13 @@
     }
 }
 
+.field.checkbox {
+    input[type="checkbox"] {
+        position: relative;
+        margin-left: 20px;
+    }
+}
+
 .movement {
     position: relative;
     margin: 10px auto;

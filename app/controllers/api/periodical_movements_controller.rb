@@ -13,7 +13,6 @@ class Api::PeriodicalMovementsController < Api::ApiApplicationController
     def create
         @periodical_movement = @user_report.periodical_movements.new(periodical_movement_params)
         if @periodical_movement.save
-            p @periodical_movement
             generate_movements @periodical_movement.start_date
             render json: @periodical_movement.as_json
         else
@@ -22,8 +21,13 @@ class Api::PeriodicalMovementsController < Api::ApiApplicationController
     end
 
     def update
+        puts "update"
         if @periodical_movement.update_attributes(periodical_movement_params)
-            set_movements
+            start_date = Date.today
+            start_date = @periodical_movement.start_date if params[:previous]
+
+            generate_movements start_date, true
+            
             render json: @periodical_movement.as_json
         else
             render json: {error: @periodical_movement.errors, status: :unprocessable_entity}
@@ -71,50 +75,55 @@ class Api::PeriodicalMovementsController < Api::ApiApplicationController
         @periodical_movement = PeriodicalMovement.find(params[:id])
     end
 
-    def generate_movements start_date
-        weekly = @periodical_movement.type_repetition == 1
-        monthly = @periodical_movement.type_repetition == 2
-        end_month = @periodical_movement.type_repetition == 3
-        repetition_value = @periodical_movement.value_repetition
+    def set_type
+        @weekly = @periodical_movement.type_repetition == 1
+        @monthly = @periodical_movement.type_repetition == 2
+        @end_month = @periodical_movement.type_repetition == 3
+        @repetition_value = @periodical_movement.value_repetition
+    end
 
-        p @periodical_movement
-        p weekly
-        p monthly
-        p end_month
-
+    def generate_movements start_date, update = false
+        set_type
         start_date.upto @periodical_movement.end_date do |d|
-            p d
-            if((weekly && d.wday == repetition_value) || (monthly && d.mday == repetition_value) || (end_month && d.month == d.nextday.month))
-                unless @periodical_movement.movements.find_by(operation_date: d)
-                    m = @user_report.movements.new
-                    m.periodical_movement = @periodical_movement
-                    m.name = @periodical_movement.name
-                    m.description = @periodical_movement.description
-                    m.amount = @periodical_movement.amount
-                    m.movement_type = @periodical_movement.movement_type
-                    m.operation_date = d
-                    m.edited = false
-
-                    m.save
-                    p m
+            m = @periodical_movement.movements.find_by(operation_date: d)
+            if((@weekly && d.wday == @repetition_value) || (@monthly && d.mday == @repetition_value) || (@end_month && d.month == d.nextday.month))
+                if m
+                    if update !m.edited || params[:all]
+                        update_movement m, d
+                    end
+                else
+                    insert_movement d
                 end
+            else
+                m.destroy if m
             end
         end
     end
 
-    def set_movements
-        start_date = Date.today
-        start_date = @periodical_movement.start_date if params[:previous]
+    def insert_movement d
+        m = @user_report.movements.new
+        m.periodical_movement = @periodical_movement
+        m.name = @periodical_movement.name
+        m.description = @periodical_movement.description
+        m.amount = @periodical_movement.amount
+        m.movement_type = @periodical_movement.movement_type
+        m.operation_date = d
+        m.edited = false
 
-        movements = 
-        if params[:all] 
-            @periodical_movement.movements.where(["operation_date >= :today", {:today => start_date}]).all                
-        else
-            @periodical_movement.movements.where(["operation_date >= :today and edited = false", {:today => start_date}]).all                
-        end
+        m.save
+        p m
+    end
 
-        movements.each {|m| m.destroy}
+    def update_movement m, d
+        m.periodical_movement = @periodical_movement
+        m.name = @periodical_movement.name
+        m.description = @periodical_movement.description
+        m.amount = @periodical_movement.amount
+        m.movement_type = @periodical_movement.movement_type
+        m.operation_date = d
+        m.edited = false
 
-        generate_movements start_date
+        m.save
+        p m
     end
 end

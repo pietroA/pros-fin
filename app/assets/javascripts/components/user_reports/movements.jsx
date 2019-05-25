@@ -18,9 +18,12 @@ class Movement extends React.Component{
     }
     Delete() {
         $.ajax({
-            ulr : '/api/user_reports/'+this.props.user_report.id+'/movements/'+this.props.movement.id,
+            url: '/api/user_reports/'+this.props.user_report.id+'/movements/'+this.props.movement.id,
             type : 'DELETE',
-            success : () => { this.props.Reload() },
+            success : () => { 
+                $("#delete-movement-"+this.props.movement.id).modal("hide");
+                this.props.Reload();
+             },
             error : (xhr, error, status) => { console.log(xhr, error, status); }
         });
     }

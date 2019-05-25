@@ -31,12 +31,15 @@ class PeriodicalMovement extends React.Component {
     }
     Delete() {
         $.ajax({
-            ulr : '/api/user_reports/'+this.props.user_report.id+'/periodical_movements/'+this.props.periodical_movement.id,
+            url: '/api/user_reports/'+this.props.user_report.id+'/periodical_movements/'+this.props.periodical_movement.id,
             type : 'DELETE',
             data : {
-                delete_option : delete_option
+                delete_option : this.state.delete_option
             },
-            success : () => { this.props.Reload() },
+            success : () => { 
+                $("#delete-pm-"+this.props.periodical_movement.id).modal("hide");
+                this.props.Reload(); 
+            },
             error : (xhr, error, status) => { console.log(xhr, error, status); }
         });
     }
@@ -146,7 +149,8 @@ class PeriodicalMovementForm extends React.Component {
             start_date : new Date(),
             end_date : new Date(),
             previous: false,
-            all: false
+            all: false,
+            operation_result : ''
         };
         this.Save = this.Save.bind(this);
         this.Add  = this.Add.bind(this);
@@ -175,14 +179,30 @@ class PeriodicalMovementForm extends React.Component {
         }
     }
     Add(){
+        var periodical_movement = {};
+        periodical_movement.name = this.state.name;
+        periodical_movement.description = this.state.description;
+        periodical_movement.movement_type = this.state.movement_type;
+        periodical_movement.type_repetition = this.state.type_repetition;
+        periodical_movement.value_repetition = this.state.value_repetition;
+        periodical_movement.amount = this.state.amount;
+        periodical_movement.start_date = this.state.start_date;
+        periodical_movement.end_date = this.state.end_date;
+
         $.ajax({
             url: '/api/user_reports/'+this.props.user_report.id+'/periodical_movements/',
             type: 'POST',
             data: {
-                periodical_movement : this.state
+                periodical_movement : periodical_movement
             },
-            success: (periodical_movement) => { this.props.Reload(); },
-            error: (xhr, errors, status) => { console.log(xhr, errors, status); }
+            success: (periodical_movement) => {
+                 this.setState({operation_result:"Movimento Periodico inserito correttamente"});
+                 this.props.Reload(); 
+                },
+            error: (xhr, errors, status) => { 
+                this.setState({operation_result:"Errore riscontrato: "+errors});
+                console.log(xhr, errors, status); 
+            }
         });
     }
     Update(){
@@ -200,10 +220,18 @@ class PeriodicalMovementForm extends React.Component {
             url: '/api/user_reports/'+this.props.user_report.id+'/periodical_movements/'+periodical_movement.id,
             type: 'PUT',
             data: {
-                periodical_movement : periodical_movement
+                periodical_movement : periodical_movement,
+                previous : this.state.previous,
+                all : this.state.all
             },
-            success: (periodical_movement) => { this.props.Reload(); },
-            error: (xhr, errors, status) => { console.log(xhr, errors, status); }
+            success: (_periodical_movement) => { 
+                this.setState({operation_result:"Aggiornamento effettuato"});
+                this.props.Reload(); 
+            },
+            error: (xhr, errors, status) => { 
+                this.setState({operation_result:"Errore riscontrato: "+errors});
+                console.log(xhr, errors, status); 
+            }
         });
     }
     HandleChange(e){
@@ -228,7 +256,7 @@ class PeriodicalMovementForm extends React.Component {
     </div>
     <div className="field checkbox">
         <label htmlFor="all">
-            Includi precendenti <input type="checkbox" id="all" name="all" value={this.state.all} onChange={this.HandleChange} />
+            Includi modificati <input type="checkbox" id="all" name="all" value={this.state.all} onChange={this.HandleChange} />
         </label>        
     </div>
 </div>
@@ -237,6 +265,7 @@ class PeriodicalMovementForm extends React.Component {
 
         return(
 <form>
+    <p>{this.state.operation_result}</p>
     <fieldset>
         <legend>{title}</legend>
         <div className="form-group">
@@ -280,6 +309,7 @@ class PeriodicalMovementForm extends React.Component {
         </div>
         {update_options}
     </fieldset>
+    <p>{this.state.operation_result}</p>
     <button className="btn btn-button" type="button" onClick={this.Save}><i className="fa fa-save"></i> Salva</button>
     <button className="btn btn-button" type="reset"><i className="fa fa-undo"></i> Annulla</button>
 </form>
