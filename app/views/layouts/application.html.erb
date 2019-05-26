@@ -11,9 +11,11 @@
   </head>
 
   <body>
-    <div class="row">
+    <%= render 'layouts/nav_menu' %>
+    <div class="row page">
       <div class="col-md-offset-2 col-md-8">
         <%= render 'layouts/flash_messages' %>
+		
         <%= yield %>
       </div>
     </div>
