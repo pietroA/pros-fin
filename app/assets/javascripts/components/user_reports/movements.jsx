@@ -186,7 +186,6 @@ class MovementForm extends React.Component{
         var edited = "";
         if(this.props.movement){
             legend = "Modifica " + this.state.name;
-            console.log(this.props.movement);
             if(this.props.movement.periodical_movement_id) {
                 edited = (
                     <div className="field checkbox">
@@ -210,6 +209,7 @@ class MovementForm extends React.Component{
             <label htmlFor="name">Nome</label>
             <input className="form-control" type="text" name="name" value={this.state.name} onChange={this.HandleChange} />
         </div>
+        {edited}
         <div className="form-group">
             <textarea  className="form-control" name="description" onChange={this.HandleChange} value={this.state.description}></textarea>
         </div>
