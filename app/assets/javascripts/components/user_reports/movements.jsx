@@ -190,11 +190,7 @@ class MovementForm extends React.Component{
                 edited = (
                     <div className="field checkbox">
                         <label htmlFor="edited">
-                            <input type="checkbox" value={this.state.edited} onChange={this.HandleChange} /> Blocca le modifiche 
-                            <i  className="fa fa-info-circle" 
-                                data-toggle="tooltip" 
-                                data-placement="bottom" 
-                                title="In caso venisse modificato il movimento periodico questo movimento non verrà modificato"></i>
+                            <input type="checkbox" value={this.state.edited} onChange={this.HandleChange} /> Blocca le modifiche (In caso venisse modificato il movimento periodico questo movimento non verrà modificato)
                         </label>
 
                     </div>
