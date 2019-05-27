@@ -263,6 +263,7 @@ class PeriodicalMovementForm extends React.Component {
             );
         }
 
+        
         return(
 <form>
     <p>{this.state.operation_result}</p>
