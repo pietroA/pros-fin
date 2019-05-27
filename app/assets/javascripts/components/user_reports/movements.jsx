@@ -196,6 +196,7 @@ class MovementForm extends React.Component{
                                 data-placement="bottom" 
                                 title="In caso venisse modificato il movimento periodico questo movimento non verrà modificato"></i>
                         </label>
+                        
                     </div>
                 );
             }
