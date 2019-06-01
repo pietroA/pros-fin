@@ -21,13 +21,14 @@ class Api::PeriodicalMovementsController < Api::ApiApplicationController
     end
 
     def update
-        puts "update"
+        @end_date = @periodical_movement.end_date
+
+        p 'update 1'
         if @periodical_movement.update_attributes(periodical_movement_params)
+            p 'update 2'
             start_date = Date.today
             start_date = @periodical_movement.start_date if params[:previous]
-
-            generate_movements start_date, true
-            
+            generate_movements start_date, true    
             render json: @periodical_movement.as_json
         else
             render json: {error: @periodical_movement.errors, status: :unprocessable_entity}
@@ -82,16 +83,24 @@ class Api::PeriodicalMovementsController < Api::ApiApplicationController
         @repetition_value = @periodical_movement.value_repetition
     end
 
-    def generate_movements start_date, update = false
+    def generate_movements start_date, from_update = false
+        puts 'generate_movements'
+        @end_date = @periodical_movement.end_date unless @end_date && @end_date > @periodical_movement.end_date
+
+        p @end_date
         set_type
-        start_date.upto @periodical_movement.end_date do |d|
+        start_date.upto @end_date do |d|
             m = @periodical_movement.movements.find_by(operation_date: d)
             if((@weekly && d.wday == @repetition_value) || (@monthly && d.mday == @repetition_value) || (@end_month && d.month == d.nextday.month))
                 if m
-                    if update !m.edited || params[:all]
+                    if d > @periodical_movement.end_date
+                        m.destroy
+                    elsif from_update && (!m.edited || params[:all])
+                        puts 'update_movement'
                         update_movement m, d
                     end
                 else
+                    p 'insert_movement'
                     insert_movement d
                 end
             else
@@ -101,6 +110,7 @@ class Api::PeriodicalMovementsController < Api::ApiApplicationController
     end
 
     def insert_movement d
+        puts 'insert_movement 2'
         m = @user_report.movements.new
         m.periodical_movement = @periodical_movement
         m.name = @periodical_movement.name
@@ -115,6 +125,7 @@ class Api::PeriodicalMovementsController < Api::ApiApplicationController
     end
 
     def update_movement m, d
+        puts 'update_movement 2'
         m.periodical_movement = @periodical_movement
         m.name = @periodical_movement.name
         m.description = @periodical_movement.description
