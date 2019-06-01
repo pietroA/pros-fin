@@ -131,3 +131,16 @@
     background-color: rgba(254, 254, 254, 0.6);
     box-shadow: rgba(0, 0, 0, 0.4) 10px 10px 10px;
 }
+
+.half {
+    width: 48%;
+}
+.half.half-left {
+    float: left;
+}
+.half.half.half-right {
+    float: right;
+}
+.user-reports-selection {
+    padding: 10px;
+}

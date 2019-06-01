@@ -66,15 +66,21 @@ class UserReports extends React.Component{
     <div className="user-report-form">
         <UserReportForm AddUserReport={this.AddUserReport} />
     </div>
-
-    <div className="dropdown">
-        <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            I tuoi Prospetti
-            <span className="caret"></span>
-        </button>
-        <ul className="dropdown-menu" aria-labelledby="dLabel">
-        {btn_user_reports}
-        </ul>
+    <div className="user-reports-selection">
+        <div className="dropdown">
+            <button id="dLabel" 
+                    type="button" 
+                    className="btn btn-default btn-block text-center"
+                    data-toggle="dropdown" 
+                    aria-haspopup="true" 
+                    aria-expanded="false">
+                I tuoi Prospetti
+                <span className="caret"></span>
+            </button>
+            <ul className="dropdown-menu" aria-labelledby="dLabel">
+            {btn_user_reports}
+            </ul>
+        </div>
     </div>
     <div className="tab-content">
         {user_reports}
@@ -350,11 +356,11 @@ class UserReport extends React.Component{
   <div className="tab-content">
     <div role="tabpanel" className="tab-pane active" id="home">
         <div className="form-inline">
-            <div className="form-group">
+            <div className="form-group half half-left">
                 <label htmlFor="date_from">Da: </label>
                 <input className="form-control" type="date" name="date_from" value={this.state.date_from} onChange={this.HandleChange} />
             </div>
-            <div className="form-group">
+            <div className="form-group half half-right">
                 <label htmlFor="date_to">A: </label>
                 <input className="form-control" type="date" name="date_to" value={this.state.date_To} onChange={this.HandleChange} />
             </div>
