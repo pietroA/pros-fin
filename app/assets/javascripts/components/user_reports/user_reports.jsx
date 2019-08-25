@@ -54,7 +54,8 @@ class UserReports extends React.Component{
                             ChangeUserReports={this.ChangeUserReports} />
             );
             btn_user_reports.push(                
-<li key={"user-report-li-"+user_report.id}><a href={"#user-report-"+user_report.id} 
+<li key={"user-report-li-"+user_report.id}>
+    <a href={"#user-report-"+user_report.id} 
         aria-controls={"user-report-"+user_report.id}
         id={"user-report-li-"+user_report.id} 
         role="tab" data-toggle="tab">{user_report.name}</a></li>
@@ -349,12 +350,12 @@ class UserReport extends React.Component{
         </section>
 
   <ul className="nav nav-tabs" role="tablist">
-    <li role="presentation" className="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>
-    <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Impostazioni</a></li>
+    <li role="presentation" className="active"><a href={"#home"+this.props.user_report.id} aria-controls={"home"+this.props.user_report.id} role="tab" data-toggle="tab">Home</a></li>
+    <li role="presentation"><a href={"#settings"+this.props.user_report.id} aria-controls={"settings"+this.props.user_report.id} role="tab" data-toggle="tab">Impostazioni</a></li>
   </ul>
 
   <div className="tab-content">
-    <div role="tabpanel" className="tab-pane active" id="home">
+    <div role="tabpanel" className="tab-pane active" id={"home"+this.props.user_report.id}>
         <div className="form-inline">
             <div className="form-group half half-left">
                 <label htmlFor="date_from">Da: </label>
@@ -370,7 +371,7 @@ class UserReport extends React.Component{
         </div>
         {movements_section}
     </div>
-    <div role="tabpanel" className="tab-pane" id="settings">
+    <div role="tabpanel" className="tab-pane" id={"settings"+this.props.user_report.id}>
         {settings_section}
     </div>
   </div>
